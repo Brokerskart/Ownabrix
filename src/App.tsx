@@ -19,7 +19,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/Ownabrix">
         <Layout>
           <Routes>
             <Route path="/" element={<Index />} />
