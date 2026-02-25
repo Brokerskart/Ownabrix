@@ -22,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center">
             <img
-              src="/ownabrix-logo.png"
+              src={`${import.meta.env.BASE_URL}ownabrix-logo.png`}
               alt="Ownabrix"
               className="h-8 md:h-10 w-auto object-contain"
             />
@@ -99,7 +99,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <div className="mb-1">
                 <img
-                  src="/ownabrix-logo.png"
+                  src={`${import.meta.env.BASE_URL}ownabrix-logo.png`}
                   alt="Ownabrix"
                   className="h-7 w-auto object-contain brightness-0 invert"
                 />

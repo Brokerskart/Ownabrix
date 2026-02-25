@@ -43,7 +43,7 @@ const About = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
               <div className="shrink-0 p-3 bg-white rounded-lg shadow-sm border border-border/50">
                 <img
-                  src="/jll-logo.png"
+                  src={`${import.meta.env.BASE_URL}jll-logo.png`}
                   alt="JLL Logo"
                   className="h-10 md:h-12 w-auto object-contain"
                 />
