@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { BarChart3, Wallet, Building2, ShieldCheck, Search, Landmark, FileText, Lock, TrendingUp, ArrowRight, Phone, MessageCircle } from "lucide-react";
+import { BarChart3, Wallet, Building2, ShieldCheck, Search, Landmark, FileText, Lock, TrendingUp, ArrowRight, Phone, MessageCircle, Sparkles } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
-import vaswaniImg from "@/assets/vaswani-centropolis.jpg";
+import birlaImg from "@/assets/birla-evara-main.jpg";
 
 const features = [
   { icon: BarChart3, title: "Low Entry, High Yield", desc: "Start owning Grade A commercial office space for a fraction of the total cost." },
@@ -41,7 +41,7 @@ const Index = () => {
               <span className="text-gold-gradient">Fractional.</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-primary-foreground/80 leading-relaxed">
-              Own institutional-grade commercial assets in Bengaluru's most iconic corridors. Fully managed. Monthly yields. Zero Hassle.
+              Own institutional-grade assets in Bengaluru's most iconic corridors. Fully managed. Exceptional capital appreciation. Zero hassle.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
@@ -72,7 +72,7 @@ const Index = () => {
               Why <span className="text-gold">Ownabrix</span>?
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Institutional-grade commercial real estate, now accessible to individual investors.
+              Institutional-grade commercial &amp; residential landmarks, now accessible to individual investors.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -97,40 +97,49 @@ const Index = () => {
       <section className="py-20 md:py-28 bg-cream">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img src={vaswaniImg} alt="Vaswani Centropolis" className="w-full h-80 lg:h-[450px] object-cover" />
-              <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider gold-gradient text-accent-foreground">
-                Live Opportunity
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
+              <img src={birlaImg} alt="Birla Evara Sarjapur Road" className="w-full h-80 lg:h-[450px] object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider gold-gradient text-accent-foreground shadow-lg flex items-center gap-1.5">
+                <Sparkles size={12} /> Live Opportunity
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-white text-xs">
+                <p className="font-semibold text-gold">Birla Evara by Birla Estates</p>
+                <p className="text-white/70">Sarjapur Road, Kodathi Village | RERA Registered</p>
               </div>
             </div>
             <div>
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-6">
-                Vaswani Centropolis
+              <p className="text-xs uppercase tracking-widest text-gold font-bold mb-2">Featured Investment Landmark</p>
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-3">
+                Birla Evara, Sarjapur Road
               </h2>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                Anchor your portfolio in the heart of Bengaluru's CBD. A Grade A commercial office space on Langford Road.
+              <p className="text-base text-foreground/80 font-medium mb-3">
+                Anchor Your Portfolio in Bengaluru’s Primary Tech Corridor
               </p>
-              <p className="text-sm text-gold font-medium mb-8">
-                "Join a community of institutional owners — 2 floors in this building are already held by major fractional platforms (hBits), validating the asset's long-term value."
+              <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                A 25+ acre integrated residential township featuring an iconic 4 BHK + SQ Unit with asymmetrical 10:10:80 milestone payment terms and a planned 3.10-Acre in-township Birla Mandir.
+              </p>
+              <p className="text-xs text-gold font-medium mb-8 bg-amber-50/60 dark:bg-amber-950/20 p-3 rounded-lg border border-gold/30">
+                ⭐ Prime micro-market: Minutes from Wipro Main Campus, RGA Tech Park, RMZ Ecospace, and walkable to DPS &amp; NPS Sarjapur.
               </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
-                  { label: "Target Rental Yield", value: "7.5% p.a." },
-                  { label: "Asset Size", value: "8,873 Sq. Ft." },
-                  { label: "Location", value: "Langford Road, CBD" },
-                  { label: "Lock-in", value: "3 Years (MNC)" },
+                  { label: "Target Appreciation", value: "16–18% CAGR", sub: "* Base Case" },
+                  { label: "Minimum Investment", value: "₹25 Lakhs", sub: "Fractional Unit" },
+                  { label: "Asset Class", value: "4 BHK + SQ", sub: "~1,622 sft Carpet" },
+                  { label: "Payment Plan", value: "10 : 10 : 80", sub: "Milestone-Based" },
                 ].map((stat) => (
-                  <div key={stat.label} className="p-4 rounded-lg bg-card border border-border">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{stat.label}</p>
+                  <div key={stat.label} className="p-4 rounded-xl bg-card border border-border shadow-sm">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{stat.label}</p>
                     <p className="text-lg font-heading font-bold text-foreground">{stat.value}</p>
+                    <p className="text-[10px] text-gold font-medium mt-0.5">{stat.sub}</p>
                   </div>
                 ))}
               </div>
               <Link
                 to="/properties"
-                className="inline-flex items-center gap-2 px-7 py-3.5 text-base font-semibold rounded-md gold-gradient text-accent-foreground hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 px-7 py-3.5 text-base font-semibold rounded-md gold-gradient text-accent-foreground hover:opacity-90 transition-opacity shadow-lg shadow-gold/20"
               >
-                View Full Details <ArrowRight size={18} />
+                View Full Details &amp; Unlock Plans <ArrowRight size={18} />
               </Link>
             </div>
           </div>
