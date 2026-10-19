@@ -1,395 +1,850 @@
 import { useState } from "react";
 import {
   MapPin, Building2, TrendingUp, Train, Star, Shield, Phone,
-  MessageCircle, CheckCircle, Lock, ChevronDown, ChevronUp,
-  Landmark, Layers, FileText, BadgeCheck
+  MessageCircle, CheckCircle2, Lock, ChevronDown, ChevronUp,
+  Landmark, Layers, FileText, BadgeCheck, Eye, Download, Calendar,
+  Sparkles, Compass, Check, ArrowRight, X
 } from "lucide-react";
-import vaswaniImg from "@/assets/vaswani-centropolis.jpg";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
-/* ─── Data ─────────────────────────────────────────────────────────────── */
+// High-resolution renders
+import facadeImg from "@/assets/birla-evara-main.jpg";
+import poolImg from "@/assets/birla-evara-pool.jpg";
+import masterplanImg from "@/assets/birla-evara-masterplan.jpg";
+import floorplanImg from "@/assets/birla-evara-4bhk-floorplan.jpg";
+import courtyardImg from "@/assets/birla-evara-courtyard.jpg";
+import walkwayImg from "@/assets/birla-evara-walkway.jpg";
 
-const overviewRows = [
-  { label: "Asset Name", value: "Vaswani Centropolis" },
-  { label: "Asset Type", value: "Grade A Commercial Office Space – Ground Floor" },
-  { label: "Location", value: "No. 21, Langford Road, Bheemanna Garden, Shanti Nagar, Bengaluru – CBD" },
-  { label: "Micro-market", value: "Central Business District (CBD)" },
-  { label: "Developer", value: "Vaswani Group (est. 1985, 39+ years in real estate)" },
-  { label: "Year of Construction", value: "2009" },
-  { label: "Total Built-up Area", value: "~1,90,000 sft (entire building)" },
-  { label: "Building Configuration", value: "2 Basements + Ground + 7 Floors" },
-  { label: "Typical Floor Area", value: "~26,000 sft" },
-  { label: "Area Offered for Sale", value: "Ground Floor: 8,874 sft (via fractional ownership)" },
-  { label: "Quoted Price", value: "INR 23,000 per sft" },
-  { label: "Target Rental Yield", value: "7.5% per annum" },
-  { label: "Lock-in Period", value: "3 Years (MNC Tenant)" },
-  { label: "Current Status", value: "Pre-Leased" },
-];
-
-const highlights = [
-  { value: "7.5%", label: "Target Yield p.a." },
-  { value: "8,874", label: "sft Offered" },
-  { value: "₹23K", label: "per sft" },
-  { value: "3 Yrs", label: "MNC Lock-in" },
-];
-
-const whyReasons = [
+/* ─── Hero Renders Data ─────────────────────────────────────────────────── */
+const heroRenders = [
   {
-    Icon: MapPin,
-    title: "Prime CBD Location",
-    desc: "Langford Road sits in Bengaluru's Central Business District, commanding ₹175–275/sft/month rentals with a city-low vacancy of just 3.30%.",
+    id: "facade",
+    title: "Project Facade & Elevation",
+    subtitle: "Iconic contemporary high-rise towers crafted by Birla Estates",
+    src: facadeImg,
+    tag: "High-Rise Elevation",
   },
   {
-    Icon: Shield,
-    title: "Institutional Validation",
-    desc: "2 floors in this very building are already held by hBits — a leading fractional ownership platform — validating the asset's long-term institutional value.",
+    id: "pool",
+    title: "Swimming Pool & Leisure Deck",
+    subtitle: "Resort-style infinity edge pool with sun deck & private cabanas",
+    src: poolImg,
+    tag: "Luxury Amenity",
   },
   {
-    Icon: Building2,
-    title: "Grade A Specifications",
-    desc: "In-house parking, 24×7 security, terrace cafeteria, business centre, and premium glass-facade architecture.",
+    id: "masterplan",
+    title: "Landscaped Masterplan",
+    subtitle: "25+ Acres integrated township with 80% open lush greenery & Birla Mandir",
+    src: masterplanImg,
+    tag: "25-Acre Township",
   },
   {
-    Icon: Train,
-    title: "Excellent Connectivity",
-    desc: "0.5 km from Richmond Road · 1.2 km from The Ritz-Carlton · 1.5 km from UB City Mall · 1.9 km from Cubbon Park Metro.",
+    id: "courtyard",
+    title: "Central Green Courtyard",
+    subtitle: "Step-free pedestrian boulevards and manicured landscape gardens",
+    src: courtyardImg,
+    tag: "Green Realm",
   },
   {
-    Icon: TrendingUp,
-    title: "Upcoming Metro Boost",
-    desc: "Pink Line (Nagawara → Kalena Agrahara) going operational in 2026–2027 will further enhance connectivity and capital values.",
+    id: "walkway",
+    title: "Clubhouse Walkway Spine",
+    subtitle: "Grand canopy walkways linking social, sports & wellness zones",
+    src: walkwayImg,
+    tag: "Club Spine",
   },
 ];
 
-const publicStructure = [
-  { label: "Target Yield", value: "7.5% p.a.", highlight: true },
-  { label: "Asset Size", value: "8,873 sft", highlight: false },
-  { label: "Minimum Investment", value: "₹25 Lakhs (indicative)", highlight: true },
-  { label: "Structure", value: "SPV via Private Placement", highlight: false },
+/* ─── Key Metrics Data ──────────────────────────────────────────────────── */
+const keyMetrics = [
+  {
+    label: "Target Appreciation",
+    value: "16–18% CAGR",
+    subtext: "* Base Case (1.8x–2.0x Multiple)",
+    highlight: true,
+  },
+  {
+    label: "Minimum Investment",
+    value: "₹25 Lakhs",
+    subtext: "Fractional SPV Unit Stake",
+    highlight: true,
+  },
+  {
+    label: "Holding Period",
+    value: "4–5 Years",
+    subtext: "Exit targeted at OC / Possession",
+    highlight: false,
+  },
+  {
+    label: "Payment Structure",
+    value: "10 : 10 : 80",
+    subtext: "Milestone-Linked Plan",
+    highlight: false,
+  },
 ];
 
-const lockedItems = [
-  "Detailed financial model with IRR projections",
-  "MNC tenant name and full lease terms",
-  "Monthly income breakdown per investment slab",
-  "Exit strategy timeline (5–7 year horizon)",
-  "SPV legal documentation summary",
+/* ─── Asset Summary Table ───────────────────────────────────────────────── */
+const assetSummaryRows = [
+  { label: "Asset Name", value: "Birla Evara" },
+  { label: "Developer", value: "Birla Estates (Aditya Birla Group / Century Textiles)" },
+  { label: "Asset Class", value: "Premium Residential Landmark (4 BHK + SQ Unit)" },
+  { label: "Unit Configuration", value: "4 BHK + Staff Quarter (SQ / Maid's Room) + Private Balcony" },
+  { label: "Unit Carpet Area", value: "~1,622 Sq. Ft. (Super Built-up ~2,600+ Sq. Ft.)" },
+  { label: "Location", value: "Sarjapur Road, Bengaluru East (Kodathi Village / Varthur Hobli)" },
+  { label: "RERA Registration", value: "PRM/KA/RERA/1251/446/PR/060225/007487" },
+  { label: "Land Parcel", value: "~25 to 30 Acres Integrated Masterplanned Township" },
+  { label: "Township Scale", value: "13 High-Rise Towers (2 Basements + Ground + 27 Floors) | ~1,600 Units" },
+  { label: "Open Space Ratio", value: "80% Dedicated Lush Greenery & Active Sports Amenities" },
+  { label: "Investment Structure", value: "Special Purpose Vehicle (SPV) Private Placement (Sec 42)" },
+  { label: "Target Exit Window", value: "2029–2030 (Slated at Occupancy Certificate / Handover)" },
 ];
 
-const unlockedItems = [
-  { label: "MNC Tenant", value: "Leading multinational corporation (details shared on call)" },
-  { label: "IRR Projection", value: "14–16% over a 5-year horizon" },
-  { label: "Monthly Income", value: "~₹1.38L per ₹25L invested (indicative)" },
-  { label: "Exit Strategy", value: "Post lock-in resale or full building exit in 5–7 years" },
-  { label: "SPV Documentation", value: "Available on request via signed EOI" },
+/* ─── Structured Payment Plan ───────────────────────────────────────────── */
+const paymentPlan = [
+  {
+    step: "01",
+    milestone: "10% on Booking / Allotment",
+    title: "Initial Allotment",
+    desc: "Commit minimal upfront capital to lock in your fractional SPV share and institutional pre-launch entry valuation.",
+    badge: "Booking Phase",
+  },
+  {
+    step: "02",
+    milestone: "10% Within 1 Year",
+    title: "Foundation Milestone",
+    desc: "Second structured installment due 12 months after allotment, aligned with substructure and podium milestones.",
+    badge: "Month 12",
+  },
+  {
+    step: "03",
+    milestone: "80% at OC / Possession",
+    title: "Completion & Handover",
+    desc: "No interim construction interest or pre-EMI drag. 80% balance due strictly upon Occupancy Certificate (OC) / possession handover.",
+    badge: "Exit / OC Window",
+  },
 ];
 
-const spvItems = [
+/* ─── Neighborhood Highlights ───────────────────────────────────────────── */
+const neighborhoodHighlights = [
+  {
+    category: "Work Hubs",
+    icon: Building2,
+    tag: "Minutes to Tech Corridor",
+    points: [
+      "Wipro Main Campus (Sarjapur) — 3.5 km (~7 mins)",
+      "RGA Tech Park — 4.2 km (~9 mins)",
+      "RMZ Ecospace & Bellandur ORR — 7.8 km",
+      "Embassy TechVillage & Prestige Tech Park — 8.5 km",
+      "Quick arterial link to Whitefield IT Hub & Electronic City",
+    ],
+  },
+  {
+    category: "Social Infrastructure",
+    icon: Shield,
+    tag: "Premier Education & Healthcare",
+    points: [
+      "Walkable distance to Delhi Public School (DPS) Sarjapur",
+      "Minutes to National Public School (NPS) East & Greenwood High",
+      "Inventure Academy & Primus Public School in immediate radius",
+      "Top-tier healthcare: Manipal Hospital Sarjapur (4.5 km)",
+      "Motherhood Hospital & Sakra World Hospital nearby",
+    ],
+  },
+  {
+    category: "Connectivity",
+    icon: Train,
+    tag: "Direct Arterial Arteries",
+    points: [
+      "Direct frontage to Sarjapur Road & Gattahalli link",
+      "Seamless connectivity to Outer Ring Road (ORR), Bellandur & Koramangala",
+      "Dual transit access toward Whitefield and Electronic City via NICE Road",
+      "Upcoming Namma Metro Phase 3 planned along Sarjapur–Hebbal corridor",
+      "Carmelaram Railway Station — 5.8 km",
+    ],
+  },
+  {
+    category: "Masterplan Landmark",
+    icon: Landmark,
+    tag: "Unique Cultural Icon",
+    points: [
+      "Planned 3.10-Acre iconic Birla Mandir inside the township grounds",
+      "Architectural temple sanctum offering serene spiritual ambiance",
+      "Drives immense brand prestige and perpetual secondary market appeal",
+      "Surrounded by meditation groves, lotus ponds & quiet water bodies",
+      "Exclusively master-planned by Birla Estates",
+    ],
+  },
+];
+
+/* ─── SPV & Investor Protection ─────────────────────────────────────────── */
+const spvFeatures = [
   {
     Icon: Layers,
-    title: "Equity (1%)",
-    desc: "Provides direct ownership and voting rights in the Special Purpose Vehicle — making you a legal co-owner of the property.",
-  },
-  {
-    Icon: TrendingUp,
-    title: "CCDs (99%)",
-    desc: "Compulsory Convertible Debentures pay regular interest (sourced from rent) and convert to equity at a pre-defined milestone.",
+    title: "SPV Private Placement (1% Equity : 99% CCDs)",
+    desc: "Direct ownership of legal securities in a dedicated Special Purpose Vehicle (Private Limited Company) incorporated specifically for this Birla Evara asset under Section 42 of the Companies Act.",
   },
   {
     Icon: Landmark,
-    title: "Escrow Protection",
-    desc: "All pooled investor funds sit in a bank-monitored Escrow Account and are released exclusively for property acquisition.",
+    title: "Escrow-Protected Banking Oversight",
+    desc: "100% of pooled fractional investor capital sits in a dedicated, bank-monitored Escrow Account with an authorized trustee, released strictly upon institutional builder milestone clearance.",
+  },
+  {
+    Icon: TrendingUp,
+    title: "Capital Gains at OC / Possession",
+    desc: "Structured specifically to capture the massive under-construction capital delta. The 10:10:80 payment model amplifies return on equity upon final block exit or secondary resale at OC.",
   },
   {
     Icon: FileText,
-    title: "Compliance",
-    desc: "Statutory filings, audits, and regulatory compliance under the Companies Act, Section 42 — fully transparent and legally sound.",
+    title: "Institutional Due Diligence & RERA Assurance",
+    desc: "Fully vetted title deeds, encumbrance certificates, development clearances, and RERA compliance (PRM/KA/RERA/1251/446/PR/060225/007487) audited by independent legal counsel.",
   },
 ];
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
-
 const Properties = () => {
-  const [unlocked, setUnlocked] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [spvOpen, setSpvOpen] = useState<number | null>(null);
+  const [activeRenderIndex, setActiveRenderIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isFloorPlanZoomed, setIsFloorPlanZoomed] = useState(false);
+  const [spvOpen, setSpvOpen] = useState<number | null>(0);
 
-  const handleUnlock = (e: React.FormEvent) => {
+  // Form fields
+  const [formData, setFormData] = useState({
+    fullName: "",
+    mobileNumber: "",
+    emailAddress: "",
+  });
+
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (phone.replace(/\D/g, "").length >= 10) setUnlocked(true);
+    if (!formData.fullName.trim()) {
+      toast({
+        title: "Name required",
+        description: "Please enter your full name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const cleanPhone = formData.mobileNumber.replace(/\D/g, "");
+    if (cleanPhone.length < 10) {
+      toast({
+        title: "Valid mobile number required",
+        description: "Please enter a valid 10-digit mobile number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!formData.emailAddress.includes("@")) {
+      toast({
+        title: "Valid email required",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUnlocked(true);
+    setIsModalOpen(false);
+    toast({
+      title: "Project Details Unlocked!",
+      description: "Full floor plans and SPV terms are now accessible below.",
+    });
+
+    // Scroll to the unlocked section
+    setTimeout(() => {
+      const el = document.getElementById("gated-content-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }, 200);
   };
 
+  const activeRender = heroRenders[activeRenderIndex];
+
   return (
-    <div className="bg-background">
+    <div className="bg-background text-foreground">
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative h-[70vh] md:h-[80vh] flex items-end overflow-hidden">
+      {/* ── Hero Gallery & Main Showcase ──────────────────────────────────── */}
+      <section className="relative min-h-[82vh] lg:min-h-[90vh] flex flex-col justify-end overflow-hidden pb-12 pt-28">
+        {/* Background Image with smooth transition */}
         <img
-          src={vaswaniImg}
-          alt="Vaswani Centropolis exterior"
-          className="absolute inset-0 w-full h-full object-cover scale-105 transition-transform duration-[8s] hover:scale-100"
+          key={activeRender.id}
+          src={activeRender.src}
+          alt={activeRender.title}
+          className="absolute inset-0 w-full h-full object-cover animate-fade-in transition-all duration-700"
         />
-        {/* gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(220,50%,8%)] via-[hsla(220,50%,8%,0.55)] to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsla(220,50%,8%,0.7)] to-transparent" />
 
-        <div className="relative container pb-14 md:pb-20 w-full">
-          {/* Badge */}
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest gold-gradient text-accent-foreground mb-5 shadow-lg">
-            <Star size={12} fill="currentColor" /> Open for Investment
-          </span>
+        {/* Sophisticated dual overlays for maximum readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(220,50%,7%)] via-[hsla(220,50%,7%,0.65)] to-[hsla(220,50%,7%,0.3)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[hsla(220,50%,7%,0.85)] via-[hsla(220,50%,7%,0.4)] to-transparent" />
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold text-white leading-tight max-w-3xl mb-6">
-            Anchor Your Portfolio in the{" "}
-            <span className="text-gold-gradient">Heart of Bengaluru</span>
+        <div className="relative container z-10 w-full">
+          {/* Top Badge */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider gold-gradient text-accent-foreground shadow-lg">
+              <Star size={13} fill="currentColor" /> RERA Approved Opportunity
+            </span>
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/15 text-white/90 backdrop-blur-md border border-white/20">
+              Sarjapur Road, Bengaluru East
+            </span>
+            <span className="hidden sm:inline-block px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-gold-light backdrop-blur-md border border-gold/30">
+              {activeRender.tag}
+            </span>
+          </div>
+
+          {/* Section Headline & Sub-headline */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white leading-tight max-w-4xl mb-4">
+            Anchor Your Portfolio in Bengaluru’s{" "}
+            <span className="text-gold-gradient">Primary Tech Corridor</span>
           </h1>
 
-          <p className="text-white/75 text-base md:text-lg max-w-xl mb-8 leading-relaxed">
-            Vaswani Centropolis — Grade&nbsp;A commercial office, Langford Road CBD.
-            Fractional ownership starts at ₹25&nbsp;Lakhs.
+          <p className="text-white/85 text-base sm:text-lg md:text-xl font-medium max-w-2xl mb-8 leading-relaxed">
+            Invest in Birla Evara by Birla Estates | Sarjapur, Bengaluru
           </p>
 
-          {/* Quick-stat pills */}
-          <div className="flex flex-wrap gap-3">
-            {highlights.map((h) => (
-              <div
-                key={h.label}
-                className="flex flex-col items-center px-5 py-3 rounded-xl glass-card min-w-[90px]"
-              >
-                <span className="text-xl md:text-2xl font-heading font-bold text-gold">{h.value}</span>
-                <span className="text-[11px] text-white/65 uppercase tracking-wide mt-0.5">{h.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Property Overview ────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container">
-          <div className="flex items-end gap-4 mb-10">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-gold font-semibold mb-1">Asset Details</p>
-              <h2 className="text-2xl md:text-4xl font-heading font-bold text-foreground">Property Overview</h2>
-            </div>
-            <div className="flex-1 h-px bg-border mb-2 hidden sm:block" />
-          </div>
-
-          <div className="rounded-2xl border border-border overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
-              <tbody>
-                {overviewRows.map((row, i) => (
-                  <tr
-                    key={row.label}
-                    className={`border-b border-border last:border-0 transition-colors hover:bg-muted/50 ${i % 2 === 0 ? "bg-card" : "bg-background"
-                      }`}
-                  >
-                    <td className="py-3.5 px-5 md:px-8 text-muted-foreground font-medium w-[42%] md:w-[32%] align-top">
-                      {row.label}
-                    </td>
-                    <td className="py-3.5 px-5 md:px-8 text-foreground font-semibold">
-                      {row.value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Why This Property ────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-cream">
-        <div className="container">
-          <div className="mb-10">
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold mb-1">Investment Rationale</p>
-            <h2 className="text-2xl md:text-4xl font-heading font-bold text-foreground">Why This Property?</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {whyReasons.map((r, idx) => (
-              <div
-                key={r.title}
-                className="group relative flex flex-col gap-4 p-6 rounded-2xl bg-card border border-border hover:border-gold/40 hover:shadow-lg transition-all duration-300"
-              >
-                {/* step number */}
-                <span className="absolute top-4 right-5 text-5xl font-heading font-bold text-muted/40 select-none leading-none">
-                  {String(idx + 1).padStart(2, "0")}
-                </span>
-                <div className="w-11 h-11 rounded-xl gold-gradient flex items-center justify-center shadow-md shrink-0">
-                  <r.Icon size={20} className="text-accent-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-heading font-bold text-foreground text-base mb-1.5">{r.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{r.desc}</p>
-                </div>
-              </div>
-            ))}
-
-            {/* hBits validation callout */}
-            <div className="sm:col-span-2 lg:col-span-3 flex items-start gap-4 p-5 rounded-2xl border border-gold/30 bg-amber-50/50 dark:bg-amber-900/10">
-              <BadgeCheck size={22} className="text-gold shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-semibold">Already institutionally validated:</span> hBits — one of India's largest fractional ownership platforms — holds 2 full floors in this exact building,
-                independently confirming its investment-grade credentials.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Investment Structure (Gated) ─────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container max-w-5xl">
-          <div className="mb-10">
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold mb-1">Deal Metrics</p>
-            <h2 className="text-2xl md:text-4xl font-heading font-bold text-foreground">Investment Structure</h2>
-          </div>
-
-          {/* Public stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {publicStructure.map((s) => (
-              <div
-                key={s.label}
-                className={`flex flex-col p-5 rounded-2xl border ${s.highlight
-                  ? "border-gold/40 bg-amber-50/60 dark:bg-amber-900/10"
-                  : "border-border bg-card"
-                  }`}
-              >
-                <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">{s.label}</p>
-                <p className={`text-xl md:text-2xl font-heading font-bold ${s.highlight ? "text-gold-dark dark:text-gold" : "text-foreground"}`}>
-                  {s.value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Gated section */}
-          {!unlocked ? (
-            <div className="relative rounded-2xl border border-border overflow-hidden min-h-[480px]">
-              {/* blurred preview rows */}
-              <div className="p-8 space-y-4 select-none pointer-events-none">
-                {lockedItems.map((item) => (
-                  <div key={item} className="flex items-center gap-3 blur-[6px] opacity-50">
-                    <div className="w-2 h-2 rounded-full bg-gold shrink-0" />
-                    <span className="text-sm text-foreground">{item}</span>
+          {/* Quick Hero Actions */}
+          <div className="flex flex-wrap items-center gap-4 mb-10">
+            {/* GATED LEAD GENERATION TRIGGER */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl gold-gradient text-accent-foreground font-bold text-sm sm:text-base hover:opacity-95 active:scale-[0.98] transition-all shadow-xl shadow-gold/25 cursor-pointer">
+                  <Sparkles size={18} />
+                  Enquire Today / Unlock Project Details
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md bg-card border-border shadow-2xl p-6 sm:p-8">
+                <DialogHeader className="text-left">
+                  <div className="w-12 h-12 rounded-xl gold-gradient flex items-center justify-center mb-3 shadow-md">
+                    <Lock size={22} className="text-accent-foreground" />
                   </div>
-                ))}
-              </div>
+                  <DialogTitle className="text-2xl font-heading font-bold text-foreground">
+                    Unlock Birla Evara SPV Documents
+                  </DialogTitle>
+                  <DialogDescription className="text-sm text-muted-foreground pt-1 leading-relaxed">
+                    Provide your details below to access full 4&nbsp;BHK floor plan schematics, financial valuation model, and SPV terms.
+                  </DialogDescription>
+                </DialogHeader>
 
-              {/* gate overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/85 backdrop-blur-md px-6 py-10">
-
-                {/* icon with glow ring */}
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 rounded-full bg-gold/20 blur-xl scale-150" />
-                  <div className="relative w-16 h-16 rounded-full gold-gradient flex items-center justify-center shadow-xl">
-                    <Lock size={26} className="text-accent-foreground" />
+                <form onSubmit={handleFormSubmit} className="space-y-4 mt-2">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Rahul Sharma"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/60"
+                    />
                   </div>
-                </div>
 
-                <h3 className="font-heading text-2xl font-bold text-foreground mb-2 text-center">
-                  Unlock Full Details
-                </h3>
-                <p className="text-sm text-muted-foreground mb-8 text-center max-w-md leading-relaxed">
-                  Share your phone number to instantly access the <strong>financial model</strong>, tenant name,
-                  IRR projections, and SPV documentation.
-                </p>
-
-                {/* Phone form */}
-                <div className="w-full max-w-md space-y-3">
-                  <form onSubmit={handleUnlock} className="flex flex-col gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Mobile Number *
+                    </label>
                     <input
                       type="tel"
-                      placeholder="Enter your 10-digit phone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-5 py-3.5 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50 text-sm text-center tracking-wider"
                       required
-                      minLength={10}
+                      placeholder="e.g. 98765 43210"
+                      value={formData.mobileNumber}
+                      onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/60 tracking-wider"
                     />
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 rounded-xl gold-gradient text-accent-foreground font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm shadow-lg shadow-gold/20"
-                    >
-                      Get Instant Access →
-                    </button>
-                  </form>
-
-                  {/* divider */}
-                  <div className="flex items-center gap-3 py-1">
-                    <div className="flex-1 h-px bg-border" />
-                    <span className="text-xs text-muted-foreground">or</span>
-                    <div className="flex-1 h-px bg-border" />
                   </div>
 
-                  {/* WhatsApp alternative */}
-                  <a
-                    href="https://wa.me/919900456607?text=Hi%2C%20I%27m%20interested%20in%20Vaswani%20Centropolis.%20Please%20share%20the%20full%20investment%20details."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition-all active:scale-[0.98] shadow-md"
-                  >
-                    <MessageCircle size={17} />
-                    Request Details via WhatsApp
-                  </a>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Work / Personal Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. rahul@company.com"
+                      value={formData.emailAddress}
+                      onChange={(e) => setFormData({ ...formData, emailAddress: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-gold/60"
+                    />
+                  </div>
 
-                  <p className="text-[11px] text-muted-foreground text-center pt-1">
-                    🔒 Your details are kept private and never shared.
+                  <p className="text-[11px] text-muted-foreground leading-snug">
+                    🔒 Protected under strict NDA terms. Your credentials are never shared.
+                  </p>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 rounded-lg gold-gradient text-accent-foreground font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-gold/20"
+                  >
+                    Unlock Floor Plans &amp; SPV Terms →
+                  </button>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            <a
+              href="https://wa.me/919900456607?text=Hi%2C%20I%20would%20like%20more%20details%20on%20Birla%20Evara%20Sarjapur."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-md border border-white/20 transition-all"
+            >
+              <MessageCircle size={17} className="text-emerald-400" />
+              WhatsApp Investment Desk
+            </a>
+          </div>
+
+          {/* Render Switcher Thumbnails (Developer Note: Project Facade, Swimming Pool, Landscaped Masterplan) */}
+          <div className="border-t border-white/15 pt-5">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <span className="text-xs uppercase tracking-widest text-white/70 font-semibold flex items-center gap-1.5">
+                <Eye size={13} className="text-gold" /> Architectural Renders
+              </span>
+              <span className="text-xs text-white/50 hidden sm:inline-block">
+                Click to explore renders
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+              {heroRenders.map((r, idx) => {
+                const isSelected = activeRenderIndex === idx;
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => setActiveRenderIndex(idx)}
+                    className={`group relative flex items-center gap-2.5 p-2 rounded-xl text-left transition-all backdrop-blur-md border overflow-hidden ${isSelected
+                      ? "border-gold bg-white/20 shadow-lg ring-2 ring-gold/40"
+                      : "border-white/10 bg-black/40 hover:bg-white/15 hover:border-white/30"
+                      }`}
+                  >
+                    <img
+                      src={r.src}
+                      alt={r.title}
+                      className="w-11 h-11 rounded-lg object-cover shrink-0 border border-white/20"
+                    />
+                    <div className="min-w-0 pr-1">
+                      <p className={`text-xs font-semibold truncate ${isSelected ? "text-gold" : "text-white"}`}>
+                        {r.title.split("&")[0].trim()}
+                      </p>
+                      <p className="text-[10px] text-white/60 truncate">{r.tag}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Key Investment Metrics (Clean Card Cards) ──────────────────────── */}
+      <section className="py-12 bg-card border-b border-border relative z-20">
+        <div className="container">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-gold font-bold">Deal Snapshot</p>
+              <h2 className="text-xl sm:text-2xl font-heading font-bold text-foreground">
+                Key Investment Metrics
+              </h2>
+            </div>
+            <span className="text-xs text-muted-foreground px-3 py-1 rounded-full bg-muted border border-border">
+              Institutional Tier
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {keyMetrics.map((metric) => (
+              <div
+                key={metric.label}
+                className={`p-6 rounded-2xl border transition-all duration-300 ${metric.highlight
+                  ? "border-gold/40 bg-amber-50/40 dark:bg-amber-950/20 shadow-sm"
+                  : "border-border bg-background hover:border-gold/20"
+                  }`}
+              >
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+                  {metric.label}
+                </p>
+                <p className="text-2xl sm:text-3xl font-heading font-bold text-foreground mb-1">
+                  {metric.value}
+                </p>
+                <p className={`text-xs ${metric.highlight ? "text-gold font-medium" : "text-muted-foreground"}`}>
+                  {metric.subtext}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Structured Payment Plan (Milestone Based) ──────────────────────── */}
+      <section className="py-16 md:py-24 bg-cream/70 dark:bg-muted/10">
+        <div className="container">
+          <div className="max-w-3xl mb-12">
+            <span className="text-xs uppercase tracking-widest text-gold font-bold">Investor-Centric Cash Flow</span>
+            <h2 className="text-2xl sm:text-4xl font-heading font-bold text-foreground mt-1 mb-3">
+              Structured Payment Plan (Milestone Based)
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Designed with asymmetrical developer-linked terms. Enjoy maximum capital efficiency with zero monthly pre-EMI burdens and 80% capital retention until handover.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 relative">
+            {paymentPlan.map((step) => (
+              <div
+                key={step.step}
+                className="relative rounded-2xl border border-border bg-card p-7 shadow-sm hover:border-gold/40 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="text-3xl font-heading font-extrabold text-gold">
+                      {step.step}
+                    </span>
+                    <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider gold-gradient text-accent-foreground">
+                      {step.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl font-heading font-bold text-foreground mb-1">
+                    {step.milestone}
+                  </h3>
+                  <p className="text-xs font-semibold text-gold mb-3 uppercase tracking-wider">
+                    {step.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {step.desc}
                   </p>
                 </div>
+
+                <div className="pt-6 mt-6 border-t border-border/60 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Check size={14} className="text-emerald-500 shrink-0" />
+                  <span>Legally bound under SPV contract</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Asset Summary & Location ───────────────────────────────────────── */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="container">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-gold font-bold">Regulatory &amp; Specifications</p>
+              <h2 className="text-2xl sm:text-4xl font-heading font-bold text-foreground mt-1">
+                Asset Summary &amp; Location
+              </h2>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
+              <BadgeCheck size={16} /> RERA Registered PRM/KA/RERA/1251/446/PR/060225/007487
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border overflow-hidden shadow-sm bg-card">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <tbody>
+                  {assetSummaryRows.map((row, i) => (
+                    <tr
+                      key={row.label}
+                      className={`border-b border-border last:border-0 transition-colors hover:bg-muted/40 ${i % 2 === 0 ? "bg-card" : "bg-muted/15"
+                        }`}
+                    >
+                      <td className="py-3.5 px-5 md:px-8 text-muted-foreground font-medium w-[38%] md:w-[28%] align-top">
+                        {row.label}
+                      </td>
+                      <td className="py-3.5 px-5 md:px-8 text-foreground font-semibold">
+                        {row.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── GATED LEAD GENERATION SECTION ─────────────────────────────────── */}
+      <section id="gated-content-section" className="py-16 md:py-24 bg-cream/50 dark:bg-muted/15 border-y border-border">
+        <div className="container max-w-5xl">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="text-xs uppercase tracking-widest text-gold font-bold">Private Placement Dossier</span>
+            <h2 className="text-2xl sm:text-4xl font-heading font-bold text-foreground mt-1 mb-3">
+              Confidential Floor Plans &amp; SPV Terms
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Institutional investors gain complete access to unit schematics, financial valuation cascades, and SPV subscription agreements.
+            </p>
+          </div>
+
+          {!isUnlocked ? (
+            /* Gated State Card with trigger button */
+            <div className="relative rounded-3xl border border-border bg-card overflow-hidden shadow-xl p-8 sm:p-12 text-center">
+              {/* Blurred background preview */}
+              <div className="absolute inset-0 opacity-15 filter blur-md pointer-events-none">
+                <img src={floorplanImg} alt="Schematic preview" className="w-full h-full object-cover" />
+              </div>
+
+              <div className="relative z-10 max-w-xl mx-auto flex flex-col items-center">
+                <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center shadow-lg mb-6">
+                  <Lock size={26} className="text-accent-foreground" />
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-heading font-bold text-foreground mb-3">
+                  Unlock Birla Evara 4 BHK Floor Plan &amp; SPV Model
+                </h3>
+
+                <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+                  Enter your contact details to review the official <strong>4 BHK + SQ Unit layout (~1,622 sft carpet)</strong>, SPV capitalization table, and projected capital gains model.
+                </p>
+
+                {/* Gated Lead Gen Trigger Button */}
+                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                  <DialogTrigger asChild>
+                    <button className="px-8 py-4 rounded-xl gold-gradient text-accent-foreground font-bold text-base hover:opacity-95 active:scale-[0.98] transition-all shadow-xl shadow-gold/25 flex items-center gap-2 cursor-pointer">
+                      <Sparkles size={18} />
+                      Enquire Today / Unlock Project Details
+                    </button>
+                  </DialogTrigger>
+                </Dialog>
+
+                <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1.5">
+                  <Shield size={13} className="text-gold" />
+                  Instant access unlocked upon verification
+                </p>
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-gold/30 bg-card p-6 md:p-8 animate-fade-in shadow-sm">
-              <div className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 mb-6">
-                <CheckCircle size={20} />
-                <span className="font-semibold text-sm">Details Unlocked — Our team will reach out shortly</span>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {unlockedItems.map((item) => (
-                  <div key={item.label} className="p-4 rounded-xl bg-muted/60 border border-border">
-                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">{item.label}</p>
-                    <p className="text-sm font-semibold text-foreground">{item.value}</p>
+            /* Unlocked State View */
+            <div className="rounded-3xl border border-gold/40 bg-card p-6 sm:p-10 shadow-xl space-y-10 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                    <CheckCircle2 size={22} />
                   </div>
-                ))}
+                  <div>
+                    <h3 className="font-heading text-lg sm:text-xl font-bold text-foreground">
+                      Access Granted: Birla Evara Investor Dossier
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Unlocked for {formData.fullName} ({formData.mobileNumber})
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href={floorplanImg}
+                  download="Birla_Evara_4BHK_SQ_FloorPlan.jpg"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border hover:bg-muted text-xs font-semibold transition-colors"
+                >
+                  <Download size={15} /> Download High-Res Blueprint
+                </a>
+              </div>
+
+              {/* 4 BHK Floor Plan Preview */}
+              <div className="grid lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-7">
+                  <div className="relative rounded-2xl overflow-hidden border border-border bg-black/5 group">
+                    <img
+                      src={floorplanImg}
+                      alt="Birla Evara 4 BHK + SQ Unit Floor Plan"
+                      className="w-full h-auto object-contain cursor-zoom-in group-hover:scale-105 transition-transform duration-500"
+                      onClick={() => setIsFloorPlanZoomed(true)}
+                    />
+                    <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-md bg-black/70 text-white text-xs font-medium backdrop-blur-md">
+                      Click to Expand Plan
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5 space-y-4">
+                  <div className="p-4 rounded-xl bg-muted/30 border border-border">
+                    <p className="text-xs uppercase tracking-wider text-gold font-bold mb-1">Unit Architecture</p>
+                    <h4 className="font-heading text-lg font-bold text-foreground">4 BHK + Maid's Room (SQ)</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Carpet Area: ~1,622 Sq. Ft. | Super Area: ~2,600+ Sq. Ft.</p>
+                  </div>
+
+                  <ul className="space-y-2.5 text-xs sm:text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Check size={16} className="text-gold shrink-0 mt-0.5" />
+                      <span>Expansive living and dining hall extending to a panoramic sunset balcony deck.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check size={16} className="text-gold shrink-0 mt-0.5" />
+                      <span>Dedicated Maid's / Staff Quarter (SQ) with separate service entry &amp; private washroom.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check size={16} className="text-gold shrink-0 mt-0.5" />
+                      <span>Master bedroom suite with walk-in closet space and en-suite luxury bathroom.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check size={16} className="text-gold shrink-0 mt-0.5" />
+                      <span>Double-glazed acoustic windows and cross-ventilation designed across all 4 bedrooms.</span>
+                    </li>
+                  </ul>
+
+                  <div className="pt-2">
+                    <a
+                      href="https://wa.me/919900456607?text=Hi%2C%20I%20have%20reviewed%20the%20Birla%20Evara%20floorplan%20and%20would%20like%20to%20reserve%20an%20SPV%20fraction."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl gold-gradient text-accent-foreground font-semibold text-sm hover:opacity-90 shadow-md"
+                    >
+                      <Phone size={15} /> Talk to Investment Manager
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed SPV Terms Breakdown */}
+              <div className="pt-6 border-t border-border">
+                <h4 className="font-heading text-lg font-bold text-foreground mb-4">
+                  Confidential SPV Terms &amp; Investment Waterfall
+                </h4>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { title: "Securities Ratio", value: "1% Equity : 99% CCDs", desc: "Private Limited SPV compliance under Sec 42" },
+                    { title: "Escrow Manager", value: "Tier-1 Scheduled Bank", desc: "Monitored release tied to RERA builder phases" },
+                    { title: "Exit Target", value: "Occupancy Certificate (OC)", desc: "Projected 2029–2030 block sale / secondary trade" },
+                    { title: "Target IRR", value: "16–18% CAGR (Base)", desc: "1.8x to 2.0x capital multiple on deployed equity" },
+                  ].map((item) => (
+                    <div key={item.title} className="p-4 rounded-xl border border-border bg-background">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{item.title}</p>
+                      <p className="text-base font-heading font-bold text-foreground mt-0.5">{item.value}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── SPV & Legal Structure ────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-cream">
+      {/* ── Neighborhood Highlights & Map ──────────────────────────────────── */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="container">
+          <div className="max-w-3xl mb-12">
+            <span className="text-xs uppercase tracking-widest text-gold font-bold">Strategic Macro Location</span>
+            <h2 className="text-2xl sm:text-4xl font-heading font-bold text-foreground mt-1 mb-3">
+              Neighborhood Highlights
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Situated in Bengaluru East's highest-growth micro-market, Sarjapur Road bridges the city's largest employment corridors with high-income social infrastructure.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {neighborhoodHighlights.map((n) => (
+              <div
+                key={n.category}
+                className="p-6 rounded-2xl border border-border bg-card hover:border-gold/40 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-12 h-12 rounded-xl gold-gradient flex items-center justify-center mb-4 shadow-md">
+                    <n.icon size={22} className="text-accent-foreground" />
+                  </div>
+                  <h3 className="font-heading text-lg font-bold text-foreground mb-1">
+                    {n.category}
+                  </h3>
+                  <p className="text-xs font-semibold text-gold mb-4 uppercase tracking-wider">
+                    {n.tag}
+                  </p>
+                  <ul className="space-y-2">
+                    {n.points.map((pt, i) => (
+                      <li key={i} className="text-xs text-muted-foreground flex items-start gap-2 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gold shrink-0 mt-1.5" />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Interactive Google Map Embed */}
+          <div className="rounded-2xl border border-border overflow-hidden shadow-sm">
+            <iframe
+              title="Birla Evara Sarjapur Road Location"
+              src="https://maps.google.com/maps?q=Birla+Evara+Sarjapur+Road+Kodathi+Bengaluru&z=15&output=embed"
+              width="100%"
+              height="420"
+              style={{ border: 0, display: "block" }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          {/* Micro-Market Distance Chips */}
+          <div className="flex flex-wrap gap-2.5 mt-6">
+            {[
+              "Wipro Main Campus – 3.5 km",
+              "RGA Tech Park – 4.2 km",
+              "DPS & NPS Sarjapur – <2 km",
+              "RMZ Ecospace – 7.8 km",
+              "Manipal Hospital – 4.5 km",
+              "Planned Phase 3 Metro – 1.8 km",
+              "In-Township 3.10-Acre Birla Mandir",
+            ].map((chip) => (
+              <span
+                key={chip}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-card text-xs text-muted-foreground shadow-sm"
+              >
+                <MapPin size={12} className="text-gold shrink-0" />
+                {chip}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── SPV & Legal Protection Structure ──────────────────────────────── */}
+      <section className="py-16 md:py-24 bg-cream/70 dark:bg-muted/10">
         <div className="container max-w-5xl">
           <div className="mb-4">
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold mb-1">Investor Protection</p>
-            <h2 className="text-2xl md:text-4xl font-heading font-bold text-foreground">SPV &amp; Legal Structure</h2>
+            <p className="text-xs uppercase tracking-widest text-gold font-bold">Risk Management</p>
+            <h2 className="text-2xl sm:text-4xl font-heading font-bold text-foreground">
+              SPV &amp; Legal Structure
+            </h2>
           </div>
-          <p className="text-muted-foreground mb-10 max-w-2xl leading-relaxed">
-            Each investment is structured through a dedicated <strong>Special Purpose Vehicle (SPV)</strong> — a Private Limited
-            Company that becomes the legal owner of the property, ensuring complete transparency and legal protection.
+          <p className="text-muted-foreground mb-10 max-w-2xl leading-relaxed text-sm sm:text-base">
+            Every investment is ring-fenced inside a dedicated <strong>Special Purpose Vehicle (SPV)</strong> — a Private Limited Company incorporated solely for Birla Evara, giving fractional co-owners complete title transparency and statutory protection.
           </p>
 
           <div className="space-y-3">
-            {spvItems.map((item, idx) => {
+            {spvFeatures.map((item, idx) => {
               const open = spvOpen === idx;
               return (
                 <div
                   key={item.title}
-                  className={`rounded-2xl border transition-all duration-300 ${open ? "border-gold/40 shadow-md bg-card" : "border-border bg-card"}`}
+                  className={`rounded-2xl border transition-all duration-300 ${open ? "border-gold/40 shadow-md bg-card" : "border-border bg-card hover:border-gold/20"
+                    }`}
                 >
                   <button
                     onClick={() => setSpvOpen(open ? null : idx)}
-                    className="w-full flex items-center gap-4 p-5 text-left"
+                    className="w-full flex items-center gap-4 p-5 text-left cursor-pointer"
                   >
-                    <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shrink-0 shadow-sm">
                       <item.Icon size={18} className="text-accent-foreground" />
                     </div>
-                    <span className="flex-1 font-heading font-semibold text-foreground">{item.title}</span>
-                    {open ? <ChevronUp size={18} className="text-gold shrink-0" /> : <ChevronDown size={18} className="text-muted-foreground shrink-0" />}
+                    <span className="flex-1 font-heading font-semibold text-foreground text-sm sm:text-base">
+                      {item.title}
+                    </span>
+                    {open ? (
+                      <ChevronUp size={18} className="text-gold shrink-0" />
+                    ) : (
+                      <ChevronDown size={18} className="text-muted-foreground shrink-0" />
+                    )}
                   </button>
                   {open && (
-                    <div className="px-5 pb-5 pl-[74px] text-sm text-muted-foreground leading-relaxed animate-fade-in">
+                    <div className="px-5 pb-5 pl-[70px] text-xs sm:text-sm text-muted-foreground leading-relaxed animate-fade-in">
                       {item.desc}
                     </div>
                   )}
@@ -400,77 +855,35 @@ const Properties = () => {
         </div>
       </section>
 
-      {/* ── Neighbourhood Map ────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container max-w-5xl">
-          <div className="mb-8">
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold mb-1">Location</p>
-            <h2 className="text-2xl md:text-4xl font-heading font-bold text-foreground">Neighbourhood Map</h2>
-          </div>
-
-          <div className="rounded-2xl overflow-hidden border border-border shadow-sm">
-            <iframe
-              title="Vaswani Centropolis Location"
-              src="https://maps.google.com/maps?q=Vaswani+Centropolis,+21+Langford+Road,+Shanti+Nagar,+Bengaluru,+Karnataka+560025&z=17&output=embed"
-              width="100%"
-              height="420"
-              style={{ border: 0, display: "block" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-
-          {/* Landmark chips */}
-          <div className="flex flex-wrap gap-2 mt-5">
-            {[
-              "Richmond Road – 0.5 km",
-              "The Ritz-Carlton – 1.2 km",
-              "UB City Mall – 1.5 km",
-              "Cubbon Park Metro – 1.9 km",
-              "MG Road – 2.5 km",
-              "Nearest Metro – 3 km",
-            ].map((lm) => (
-              <span
-                key={lm}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card text-xs text-muted-foreground"
-              >
-                <MapPin size={11} className="text-gold shrink-0" />
-                {lm}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
+      {/* ── Call to Action Banner ─────────────────────────────────────────── */}
       <section className="py-20 md:py-28 navy-gradient relative overflow-hidden">
-        {/* decorative circles */}
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-white/5 pointer-events-none" />
 
         <div className="relative container max-w-3xl text-center">
-          <p className="text-xs uppercase tracking-widest text-gold/80 font-semibold mb-3">Take the Next Step</p>
+          <span className="text-xs uppercase tracking-widest text-gold/80 font-bold mb-3 inline-block">
+            Limited Fractional Allocation
+          </span>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-4 leading-tight">
-            Interested in This Opportunity?
+            Participate in Birla Evara Today
           </h2>
-          <p className="text-white/65 text-base mb-10 max-w-xl mx-auto leading-relaxed">
-            Reach out to our team to download the EOI, schedule a physical site visit, or get answers to your investment questions.
+          <p className="text-white/70 text-sm sm:text-base mb-10 max-w-xl mx-auto leading-relaxed">
+            Connect with the Ownabrix institutional desk to inspect SPV governance documents, schedule an on-site visit to Kodathi Village, or download the full Expression of Interest (EOI).
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-            <a
-              href="tel:+919900456607"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl gold-gradient text-accent-foreground font-semibold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-gold/20 w-full sm:w-auto justify-center"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl gold-gradient text-accent-foreground font-bold text-base hover:opacity-95 active:scale-[0.98] transition-all shadow-xl shadow-gold/25 w-full sm:w-auto justify-center cursor-pointer"
             >
-              <Phone size={18} />
-              Express Interest – Download EOI
-            </a>
+              <Sparkles size={18} />
+              Enquire Today / Unlock Project Details
+            </button>
             <a
-              href="https://wa.me/919900456607"
+              href="https://wa.me/919900456607?text=Hi%2C%20I%20would%20like%20to%20schedule%20a%20site%20visit%20for%20Birla%20Evara."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-base active:scale-[0.98] transition-all shadow-lg shadow-emerald-900/30 w-full sm:w-auto justify-center"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-base active:scale-[0.98] transition-all shadow-lg shadow-emerald-900/30 w-full sm:w-auto justify-center"
             >
               <MessageCircle size={18} />
               Schedule a Site Visit
@@ -482,12 +895,44 @@ const Properties = () => {
               <Phone size={14} /> +91 99004 56607
             </a>
             <span className="text-white/20">|</span>
-            <a href="https://wa.me/919900456607" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
-              <MessageCircle size={14} /> WhatsApp us
+            <a
+              href="https://wa.me/919900456607"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-white/80 transition-colors"
+            >
+              <MessageCircle size={14} /> WhatsApp Support
             </a>
           </div>
         </div>
       </section>
+
+      {/* ── Fullscreen Floor Plan Modal ────────────────────────────────────── */}
+      {isFloorPlanZoomed && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          <button
+            onClick={() => setIsFloorPlanZoomed(false)}
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+            aria-label="Close"
+          >
+            <X size={24} />
+          </button>
+          <div className="max-w-4xl max-h-[90vh] overflow-auto rounded-2xl bg-card p-4">
+            <img
+              src={floorplanImg}
+              alt="Birla Evara 4 BHK + SQ Unit Full Layout"
+              className="w-full h-auto object-contain rounded-lg"
+            />
+            <div className="p-4 text-center">
+              <h4 className="font-heading font-bold text-foreground">Birla Evara 4 BHK + SQ Unit Blueprint</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Sarjapur Road, Bengaluru East | RERA: PRM/KA/RERA/1251/446/PR/060225/007487
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
